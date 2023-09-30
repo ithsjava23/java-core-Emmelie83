@@ -41,9 +41,20 @@ public class Warehouse {
         if (id == null) {
             id = UUID.randomUUID();
         }
-
         if (products.containsKey(id)) {
-            throw new IllegalArgumentException("Product with the given ID already exists.");
+            throw new IllegalArgumentException("Product with that id already exists, use updateProduct for updates.");
+        }
+
+        if (name == null || name.isEmpty()) {
+            throw new IllegalArgumentException("Product name can't be null or empty.");
+        }
+
+        if (category == null) {
+            throw new IllegalArgumentException("Category can't be null.");
+        }
+
+        if (price == null) {
+            price = BigDecimal.ZERO;
         }
 
         ProductRecord product = new ProductRecord(name, category, price);
@@ -53,14 +64,22 @@ public class Warehouse {
 
 
     public Optional<ProductRecord> getProductById(UUID id) {
+        if (id == null || id.toString().isEmpty()) {
+            return Optional.empty();
+        }
         return Optional.ofNullable(products.get(id));
     }
 
     public void updateProductPrice(UUID id, BigDecimal newPrice) {
-        if (products.containsKey(id)) {
-            ProductRecord product = products.get(id);
+        if (id == null || newPrice == null) {
+            throw new IllegalArgumentException("Invalid ID or price.");
+        }
+        ProductRecord product = products.get(id);
+        if (product != null) {
             product.setPrice(newPrice);
             product.setChanged(true);
+        } else {
+            throw new IllegalArgumentException("Product with that id doesn't exist.");
         }
     }
 
@@ -77,7 +96,9 @@ public class Warehouse {
     }
 
     public List<ProductRecord> getProducts() {
-        return new ArrayList<>(products.values());
+        List<ProductRecord> sortedProducts = new ArrayList<>(products.values());
+        sortedProducts.sort(Comparator.comparing(ProductRecord::uuid));
+        return Collections.unmodifiableList(sortedProducts);
     }
 
     public List<ProductRecord> getChangedProducts() {
@@ -87,7 +108,7 @@ public class Warehouse {
                 changedProducts.add(product);
             }
         }
-        return changedProducts;
+        return Collections.unmodifiableList(changedProducts);
     }
 
 
@@ -98,9 +119,12 @@ public class Warehouse {
                 productsByCategory.add(product);
             }
         }
-        return productsByCategory;
+        return Collections.unmodifiableList(productsByCategory);
     }
 
+    public boolean isEmpty() {
+        return products.isEmpty();
+    }
 }
 
 
