@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.UUID;
 
-public class ProductRecord {
+public final class ProductRecord {
 
     private final UUID id;
     private String name;
@@ -15,12 +15,12 @@ public class ProductRecord {
 
 
 
-    public ProductRecord(String name, Category category, BigDecimal price) {
-        id = UUID.randomUUID();
+    public ProductRecord(UUID id, String name, Category category, BigDecimal price) {
+        this.id = id;
         this.name = name;
         this.category = category;
         this.price = price;
-        this.changed = false;
+        changed = false;
     }
 
     public UUID uuid() {
