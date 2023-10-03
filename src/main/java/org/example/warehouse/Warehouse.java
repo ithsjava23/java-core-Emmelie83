@@ -8,17 +8,12 @@ public class Warehouse {
 
 
     private String name;
-    private ArrayList<ProductRecord> products;
+    private final ArrayList<ProductRecord> products;
 
-    private ArrayList<UUID> changedProductIds;
+    private final ArrayList<UUID> changedProductIds;
 
     ArrayList<ProductRecord> changedProducts;
 
-    private Warehouse() {
-        products = new ArrayList<>();
-        changedProducts = new ArrayList<>();
-        changedProductIds = new ArrayList<>();
-    }
 
 
     private Warehouse(String name) {
@@ -39,9 +34,6 @@ public class Warehouse {
         return getInstance("DefaultWarehouse");
     }
 
-    public String getName() {
-        return name;
-    }
 
     public ProductRecord addProduct(UUID id, String name, Category category, BigDecimal price) {
         if (id == null) {
@@ -74,7 +66,7 @@ public class Warehouse {
     public Optional<ProductRecord> getProductById(UUID id) {
         for (ProductRecord product : products) {
             if (product.uuid() == id)
-                return Optional.ofNullable(product);
+                return Optional.of(product);
         }
         return Optional.empty();
     }

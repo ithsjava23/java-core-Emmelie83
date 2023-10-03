@@ -7,8 +7,8 @@ import java.util.UUID;
 public final class ProductRecord {
 
     private final UUID id;
-    private String name;
-    private Category category;
+    private final String name;
+    private final Category category;
     private BigDecimal price;
 
     private boolean changed;
@@ -56,9 +56,6 @@ public final class ProductRecord {
         return category;
     }
 
-    public boolean isChanged() {
-        return changed;
-    }
 
     public void setChanged(boolean changed) {
         this.changed = changed;
