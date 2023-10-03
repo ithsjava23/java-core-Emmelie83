@@ -7,7 +7,7 @@ import java.util.Collections;
 public class Warehouse {
 
 
-    private String name;
+    private final String name;
     private final ArrayList<ProductRecord> products;
 
     private final ArrayList<UUID> changedProductIds;
