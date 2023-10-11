@@ -1,32 +1,24 @@
 package org.example.warehouse;
-
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.Collections;
+import java.util.stream.Collectors;
 
 public class Warehouse {
 
-
     private final String name;
     private final ArrayList<ProductRecord> products;
-
-    private final ArrayList<UUID> changedProductIds;
-
-    ArrayList<ProductRecord> changedProducts;
-
+    private final ArrayList<ProductRecord> changedProducts;
 
 
     private Warehouse(String name) {
         this.name = name;
         products = new ArrayList<>();
         changedProducts = new ArrayList<>();
-        changedProductIds = new ArrayList<>();
     }
 
     public static Warehouse getInstance(String name) {
-        if (name == null || name.isEmpty()) {
+        if (name == null || name.isEmpty())
             throw new IllegalArgumentException("Warehouse name cannot be null or empty.");
-        }
         return new Warehouse(name);
     }
 
@@ -36,98 +28,72 @@ public class Warehouse {
 
 
     public ProductRecord addProduct(UUID id, String name, Category category, BigDecimal price) {
-        if (id == null) {
-            id = UUID.randomUUID();
-        }
+        UUID productId = (id == null) ? UUID.randomUUID() : id;
 
-        if (name == null || name.isEmpty()) {
+        if (name == null || name.isEmpty())
             throw new IllegalArgumentException("Product name can't be null or empty.");
-        }
 
-        if (category == null) {
-            throw new IllegalArgumentException("Category can't be null.");
-        }
+        if (products.stream().anyMatch(product -> product.uuid().equals(productId)))
+            throw new IllegalArgumentException("Product with that id already exists, use updateProduct for updates.");
 
-        for (ProductRecord product : products) {
-            if (product.uuid().equals(id)) {
-                throw new IllegalArgumentException("Product with that id already exists, use updateProduct for updates.");
-            }
-        }
+        if (category == null) throw new IllegalArgumentException("Category can't be null.");
 
-        // Price handling logic based on your application's requirements
         BigDecimal finalPrice = (price == null) ? BigDecimal.ZERO : price;
-
-        ProductRecord product = new ProductRecord(id, name, category, finalPrice);
+        ProductRecord product = new ProductRecord(productId, name, category, finalPrice);
         products.add(product);
         return product;
     }
 
-
     public Optional<ProductRecord> getProductById(UUID id) {
-        for (ProductRecord product : products) {
-            if (product.uuid() == id)
-                return Optional.of(product);
-        }
-        return Optional.empty();
+        return products.stream()
+                .filter(product -> product.uuid().equals(id))
+                .findFirst();
     }
 
     public void updateProductPrice(UUID id, BigDecimal newPrice) {
         if (id == null || newPrice == null) {
             throw new IllegalArgumentException("Invalid ID or price.");
         }
-        boolean productFound = false;
-        for (ProductRecord product : products) {
-            if (product.uuid().equals(id)) {
-                product.setPrice(newPrice);
-                product.setChanged(true);
-                if (!changedProductIds.contains(id)) {
-                    changedProductIds.add(id);
-                }
-                productFound = true;
-                break;
+
+        Optional<ProductRecord> productToUpdate = products.stream()
+                .filter(product -> product.uuid().equals(id))
+                .findFirst();
+
+        if (productToUpdate.isPresent()) {
+            ProductRecord product = productToUpdate.get();
+            product.setPrice(newPrice);
+            product.setChanged(true);
+
+            if (!changedProducts.contains(product)) {
+                changedProducts.add(product);
             }
-        }
-        if (!productFound) {
+        } else {
             throw new IllegalArgumentException("Product with that id doesn't exist.");
         }
     }
 
 
     public Map<Category, List<ProductRecord>> getProductsGroupedByCategories() {
-        Map<Category, List<ProductRecord>> groupedProducts = new HashMap<>();
-        for (ProductRecord product : products) {
-            Category category = product.getCategory();
-            if (!groupedProducts.containsKey(category)) {
-                groupedProducts.put(category, new ArrayList<>());
-            }
-            groupedProducts.get(category).add(product);
-        }
-        return groupedProducts;
+        return products.stream()
+                .collect(Collectors.groupingBy(ProductRecord::getCategory));
     }
 
     public List<ProductRecord> getProducts() {
-        return Collections.unmodifiableList(products);
+        return products.stream()
+                .toList();
     }
 
     public List<ProductRecord> getChangedProducts() {
-        List<ProductRecord> changedProducts = new ArrayList<>();
-        for (UUID id : changedProductIds) {
-            Optional<ProductRecord> productOptional = getProductById(id);
-            productOptional.ifPresent(changedProducts::add);
-        }
-        return Collections.unmodifiableList(changedProducts);
+        return changedProducts
+                .stream()
+                .toList();
     }
 
 
-
     public List<ProductRecord> getProductsBy(Category category) {
-        List<ProductRecord> productsByCategory = new ArrayList<>();
-        for (ProductRecord product : getProducts()) {
-            if (product.getCategory().equals(category)) {
-                productsByCategory.add(product);
-            }
-        }
-        return Collections.unmodifiableList(productsByCategory);
+        return products.stream()
+                .filter(product -> product.getCategory().equals(category))
+                .toList();
     }
 
     public boolean isEmpty() {

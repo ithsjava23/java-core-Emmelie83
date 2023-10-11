@@ -14,7 +14,6 @@ public final class ProductRecord {
     private boolean changed;
 
 
-
     public ProductRecord(UUID id, String name, Category category, BigDecimal price) {
         this.id = id;
         this.name = name;
@@ -27,12 +26,9 @@ public final class ProductRecord {
         return id;
     }
 
-
-
     public void setPrice(BigDecimal price) {
         this.price = price;
     }
-
 
     public Category getCategory() {
         return this.category;
@@ -55,7 +51,6 @@ public final class ProductRecord {
     public Category category() {
         return category;
     }
-
 
     public void setChanged(boolean changed) {
         this.changed = changed;
