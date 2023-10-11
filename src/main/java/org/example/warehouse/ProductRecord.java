@@ -34,16 +34,6 @@ public final class ProductRecord {
         return this.category;
     }
 
-    @Override
-    public String toString() {
-        return "ProductRecord{" +
-                "uuid=" + id +
-                ", name='" + name + '\'' +
-                ", category=" + category +
-                ", price=" + price +
-                '}';
-    }
-
     public BigDecimal price() {
         return price;
     }
@@ -54,6 +44,16 @@ public final class ProductRecord {
 
     public void isChanged(boolean changed) {
         this.changed = changed;
+    }
+
+    @Override
+    public String toString() {
+        return "ProductRecord{" +
+                "uuid=" + id +
+                ", name='" + name + '\'' +
+                ", category=" + category +
+                ", price=" + price +
+                '}';
     }
 
     @Override
