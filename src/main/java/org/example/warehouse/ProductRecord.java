@@ -52,7 +52,7 @@ public final class ProductRecord {
         return category;
     }
 
-    public void setChanged(boolean changed) {
+    public void isChanged(boolean changed) {
         this.changed = changed;
     }
 

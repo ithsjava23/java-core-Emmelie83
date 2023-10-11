@@ -62,7 +62,7 @@ public class Warehouse {
         if (productToUpdate.isPresent()) {
             ProductRecord product = productToUpdate.get();
             product.setPrice(newPrice);
-            product.setChanged(true);
+            product.isChanged(true);
 
             if (!changedProducts.contains(product)) {
                 changedProducts.add(product);

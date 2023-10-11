@@ -7,7 +7,7 @@ import java.util.Objects;
 
 public class Category {
 
-    private String name;
+    private final String name;
 
     private static final Map<String, Category> categories = new HashMap<>();
 
